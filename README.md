@@ -1,172 +1,119 @@
-DSA2040A OLAP Assignment
+# DSA2040A OLAP Assignment
+**Author: Abdiqalaq Issack - 243**
 
-Author: Abdiqalaq Issack - 243
+---
 
-📌 Project Overview
+## 📌 Project Overview
 
-This project demonstrates the design and implementation of a mini OLAP (Online Analytical Processing) system using:
-SQLite for relational queries
-Pandas for multidimensional analysis
-inside a Jupyter Notebook.
+This project demonstrates the design and implementation of a **mini OLAP (Online Analytical Processing) system**. It explores how OLAP systems can be implemented using relational databases and multidimensional analysis to gain insights from data.
 
+The project focuses on the three main OLAP architectures:
 
-The project explores the three main OLAP architectures:
+- **ROLAP (Relational OLAP)** – Uses relational databases and SQL-style queries for aggregations.
+- **MOLAP (Multidimensional OLAP)** – Uses multidimensional cubes and pivot tables for fast analysis, slicing, and dicing.
+- **HOLAP (Hybrid OLAP)** – Combines ROLAP and MOLAP to leverage the strengths of both approaches.
 
-ROLAP (Relational OLAP) – SQL queries on relational tables.
+The notebook demonstrates key OLAP operations:
 
-MOLAP (Multidimensional OLAP) – Pivot tables and data cubes for fast slicing/dicing.
+- **Slice** – Selecting a subset of data along a single dimension (e.g., a specific quarter or year).  
+- **Dice** – Applying multiple filters across dimensions (e.g., a product category in a specific quarter).  
+- **Roll-Up** – Aggregating data from detailed to higher-level summaries (e.g., Product → Category → Year).  
+- **Drill-Down** – Breaking aggregated data into more detailed levels (e.g., Year → Quarter → Month).
 
-HOLAP (Hybrid OLAP) – Combination of ROLAP and MOLAP for scalability and speed.
+Visualizations were included to clearly show trends, patterns, and insights.
 
-Key OLAP operations demonstrated:
+---
 
-Slice – Selecting a single dimension or subset of data
-Dice – Applying multiple filters across dimensions
-Roll-Up – Aggregating data from detailed to higher-level summary
-Drill-Down – Breaking aggregated data into more detailed levels
+## ⚙️ Setup Instructions
 
-Visualizations are included to show trends and insights clearly.
+**Requirements:**
 
-⚙️ Setup Instructions
+- Python 3.9+  
+- Jupyter Notebook  
+- Libraries: pandas, numpy, matplotlib, seaborn, sqlite3  
 
-Requirements:
-
-Python 3.9+
-Jupyter Notebook
-Libraries: pandas, numpy, matplotlib, seaborn, sqlite3
-Repository structure:
-
-DSA2040A_OLAP_Assignment/
-│── olap_assignment.ipynb   # Jupyter Notebook with code + outputs
-│── README.md               # Documentation (this file)
-│── sales_demo.db           # SQLite database (auto-generated)
-│── images/                 # Optional folder for plots/screenshots
+**Repository Structure:**
 
 
-🗄️ Data Warehouse Design (Star Schema)
+---
 
-The OLAP system uses a Star Schema:
+## 🗄️ Data Warehouse Design (Star Schema)
 
-Fact Table: sales
+The OLAP system uses a **Star Schema** to simplify multidimensional analysis.
 
-Column	Description
-sale_id	Primary key, unique identifier for each sale
-date	Foreign key linking to the dates dimension
-product_id	Foreign key linking to the products dimension
-quantity	Number of units sold
-revenue	Total revenue generated from the sale
+### Fact Table: `sales`
+- **sale_id:** Primary key, unique identifier for each sale  
+- **date:** Foreign key linking to the `dates` dimension  
+- **product_id:** Foreign key linking to the `products` dimension  
+- **quantity:** Number of units sold  
+- **revenue:** Total revenue generated from the sale  
 
+### Dimension Table: `products`
+- **product_id:** Primary key, unique product identifier  
+- **category:** Product category (e.g., Electronics, Clothing)  
+- **name:** Product name  
+- **price:** Unit price of the product  
 
-Dimension Table: products
+### Dimension Table: `dates`
+- **date:** Primary key, sale date  
+- **year:** Year of the sale  
+- **quarter:** Quarter of the sale  
+- **month:** Month of the sale  
 
-Column	Description
-product_id	Primary key, unique product identifier
-category	Product category (e.g., Electronics, Clothing)
-name	Product name
-price	Unit price of the product
+This design allows analysis across **time, products, and categories**.
 
+---
 
-Dimension Table: dates
+## 🔍 OLAP Architectures Implemented
 
-Column	Description
-date	Primary key, sale date
-year	Year of the sale
-quarter	Quarter of the sale
-month	Month of the sale
+### ROLAP (Relational OLAP)
+ROLAP performs aggregations directly on relational tables, simulating traditional database reporting.
 
+### MOLAP (Multidimensional OLAP)
+MOLAP uses multidimensional cubes and pivot tables for faster aggregation and analysis. It supports slicing, dicing, and visualization across multiple dimensions.
 
-This schema allows analysis across time, products, and categories.
+### HOLAP (Hybrid OLAP)
+HOLAP combines the two approaches: it uses relational queries for detailed data and in-memory multidimensional aggregation for summaries. This balances **speed** and **scalability**.
 
-🔍 OLAP Architectures Implemented
-1. ROLAP (Relational OLAP)
+---
 
-Implemented using SQL queries on SQLite.
+## 🧩 OLAP Operations Demonstrated
 
-Example Queries:
+- **Slice:** Filtering for a specific dimension, e.g., Q1 2024 sales  
+- **Dice:** Filtering across multiple dimensions, e.g., Electronics sales in Q1 2024  
+- **Roll-Up:** Aggregating from Product → Category → Year  
+- **Drill-Down:** Breaking Year → Quarter → Month  
 
-Average revenue by product category:
+Each operation includes detailed analysis with tables and visualizations in the notebook.
 
-SELECT p.category, AVG(s.revenue) AS avg_revenue
-FROM sales s
-JOIN products p ON s.product_id = p.product_id
-GROUP BY p.category;
+---
 
+## 📊 Visualizations
 
-Total sales by year:
+- **Bar Chart:** Revenue by product category  
+- **Heatmap:** Revenue cube (Category × Year)  
+- **Drill-Down Plot:** Revenue trends from Year → Quarter → Month  
 
-SELECT d.year, SUM(s.revenue) AS total_revenue
-FROM sales s
-JOIN dates d ON s.date = d.date
-GROUP BY d.year;
+Visualizations were created using **Matplotlib** and **Seaborn** to enhance insight understanding.
 
+---
 
-Best-selling product in each category:
+## 🚀 How to Run
 
-SELECT p.category, p.name, SUM(s.quantity) AS total_sold
-FROM sales s
-JOIN products p ON s.product_id = p.product_id
-GROUP BY p.category, p.name
-ORDER BY total_sold DESC;
-
-
-3. MOLAP (Multidimensional OLAP)
-
-Uses Pandas pivot tables to create multidimensional cubes.
-Example: Revenue by Product Category × Year
-pivot = pd.pivot_table(
-    sales_df.merge(products_df, on='product_id').merge(dates_df, on='date'),
-    values='revenue',
-    index='category',
-    columns='year',
-    aggfunc='sum',
-    fill_value=0
-)
-print(pivot)
-
-Allows fast slicing, dicing, and aggregation.
-
-Heatmaps and other plots provide clear multidimensional insights.
-
-5. HOLAP (Hybrid OLAP)
-
-Combines ROLAP for detailed queries and MOLAP for aggregation.
-SQL fetches detailed data
-Pandas aggregates and analyzes in-memory
-Offers scalability with speed for large datasets
+1. Clone the repository:
 
 
-🧩 OLAP Operations Demonstrated
-
-Slice: e.g., sales in Q1 2024
-Dice: e.g., Electronics sales in Q1 2024
-Roll-Up: Aggregate Product → Category → Year
-Drill-Down: Break Year → Quarter → Month
-
-Each operation includes:
-
-Python or SQL code
-Table outputs
-Visualizations
-📊 Visualizations
-Bar Chart: Revenue by product category
-Heatmap: Revenue cube (Category × Year)
-Drill-Down Plot: Revenue trends from Year → Quarter → Month
-All done using Matplotlib and Seaborn.
+2. Open the notebook:
 
 
-🚀 How to Run
+3. Run all cells sequentially. Optional: save plots to `images/` for GitHub visualization.
 
-Clone the repository:
-git clone https://github.com/yourusername/DSA2040A_OLAP_Assignment.git
-Open the notebook:
-jupyter notebook olap_assignment.ipynb
-Run all cells sequentially.
-Optional: Save plots to images/ for GitHub visualization.
+---
 
+## 🎯 Learning Outcomes
 
-🎯 Learning Outcomes
-Design a star schema for a data warehouse
-Understand ROLAP, MOLAP, HOLAP architectures
-Implement OLAP operations practically
-Combine SQL + Pandas for hybrid OLAP
-Create visualizations to interpret analytical insights
+- How to design a **star schema** for a data warehouse  
+- Understand **ROLAP, MOLAP, HOLAP architectures**  
+- Implement **OLAP operations** practically  
+- Combine relational queries with multidimensional analysis (hybrid OLAP)  
+- Use visualizations to interpret analytical insights effectively
